@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User {
 
-@JsonKey(name: 'userId') String get id; String get name; String get token;
+@JsonKey(name: 'userId') String get id;// Matching your existing field, JsonKey for server name
+ String get name; String get token;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -86,6 +87,7 @@ class _User implements User {
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override@JsonKey(name: 'userId') final  String id;
+// Matching your existing field, JsonKey for server name
 @override final  String name;
 @override final  String token;
 
