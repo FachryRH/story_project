@@ -28,4 +28,16 @@ class Story {
       lon: json['lon']?.toDouble(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'photoUrl': photoUrl,
+      'createdAt': createdAt,
+      'lat': lat,
+      'lon': lon,
+    };
+  }
 }
