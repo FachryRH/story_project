@@ -85,11 +85,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       await context.read<AuthProvider>().register(
-            _nameController.text,
-            _emailController.text,
-            _passwordController.text,
-          );
-      
+        _nameController.text,
+        _emailController.text,
+        _passwordController.text,
+      );
+
       if (mounted && context.read<AuthProvider>().state != AuthState.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -105,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.register),
@@ -113,16 +113,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           PopupMenuButton(
             icon: const Icon(Icons.language),
             tooltip: 'Language',
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'en',
-                child: const Text('English'),
-              ),
-              PopupMenuItem(
-                value: 'id',
-                child: const Text('Bahasa Indonesia'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(value: 'en', child: const Text('English')),
+                  PopupMenuItem(
+                    value: 'id',
+                    child: const Text('Bahasa Indonesia'),
+                  ),
+                ],
             onSelected: (value) {
               final locale = Locale(value);
               context.read<LocaleProvider>().setLocale(locale);
@@ -135,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (authProvider.state == AuthState.loading) {
             return const LoadingIndicator();
           }
-          
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
@@ -156,7 +154,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  if (authProvider.state == AuthState.error && authProvider.errorMessage != null)
+                  if (authProvider.state == AuthState.error &&
+                      authProvider.errorMessage != null)
                     Container(
                       padding: const EdgeInsets.all(8.0),
                       margin: const EdgeInsets.only(bottom: 16.0),
@@ -192,7 +191,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                        _passwordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: _togglePasswordVisibility,
                     ),
@@ -206,7 +207,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _confirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                        _confirmPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: _toggleConfirmPasswordVisibility,
                     ),
@@ -232,4 +235,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-} 
+}

@@ -58,18 +58,21 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         await context.read<AuthProvider>().login(
-              _emailController.text,
-              _passwordController.text,
-            );
-        
-        if (mounted && context.read<AuthProvider>().state == AuthState.authenticated) {
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        if (mounted &&
+            context.read<AuthProvider>().state == AuthState.authenticated) {
           context.goNamed('home');
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.loginError(e.toString())),
+              content: Text(
+                AppLocalizations.of(context)!.loginError(e.toString()),
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -81,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.login),
@@ -89,16 +92,14 @@ class _LoginScreenState extends State<LoginScreen> {
           PopupMenuButton(
             icon: const Icon(Icons.language),
             tooltip: 'Language',
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'en',
-                child: const Text('English'),
-              ),
-              PopupMenuItem(
-                value: 'id',
-                child: const Text('Bahasa Indonesia'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(value: 'en', child: const Text('English')),
+                  PopupMenuItem(
+                    value: 'id',
+                    child: const Text('Bahasa Indonesia'),
+                  ),
+                ],
             onSelected: (value) {
               final locale = Locale(value);
               context.read<LocaleProvider>().setLocale(locale);
@@ -111,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (authProvider.state == AuthState.loading) {
             return const LoadingIndicator();
           }
-          
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
@@ -132,7 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
-                  if (authProvider.state == AuthState.error && authProvider.errorMessage != null)
+                  if (authProvider.state == AuthState.error &&
+                      authProvider.errorMessage != null)
                     Container(
                       padding: const EdgeInsets.all(8.0),
                       margin: const EdgeInsets.only(bottom: 16.0),
@@ -161,7 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                        _passwordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: _togglePasswordVisibility,
                     ),
@@ -187,4 +191,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-} 
+}

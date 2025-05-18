@@ -32,5 +32,14 @@
   "loginError": "Login failed: {message}",
   "registerError": "Registration failed: {message}",
   "uploadSuccess": "Story uploaded successfully",
-  "uploadError": "Failed to upload story: {message}"
+  "uploadError": "Failed to upload story: {message}",
+  
+  "tapToAddPhoto": "Tap to add photo",
+  "details": "Details",
+  "location": "Location",
+  "upgradeForLocation": "Upgrade to the paid version to add location to your stories",
+  "getCurrentLocation": "Get current location",
+  "noLocationSelected": "No location selected",
+  "loadMore": "Load more",
+  "storyNotFound": "Story not found"
 } 

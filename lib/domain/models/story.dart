@@ -28,4 +28,4 @@ class Story {
       lon: json['lon']?.toDouble(),
     );
   }
-} 
+}

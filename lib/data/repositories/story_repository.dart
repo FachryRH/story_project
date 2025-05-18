@@ -31,4 +31,4 @@ class StoryRepository {
       lon: lon,
     );
   }
-} 
+}

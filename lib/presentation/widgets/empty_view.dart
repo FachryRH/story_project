@@ -12,11 +12,7 @@ class EmptyView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.inbox_outlined,
-            size: 60,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.inbox_outlined, size: 60, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noStories,
@@ -24,13 +20,10 @@ class EmptyView extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: const Text('Refresh'),
-            ),
+            ElevatedButton(onPressed: onRetry, child: const Text('Refresh')),
           ],
         ],
       ),
     );
   }
-} 
+}

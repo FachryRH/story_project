@@ -32,5 +32,14 @@
   "loginError": "Gagal masuk: {message}",
   "registerError": "Gagal mendaftar: {message}",
   "uploadSuccess": "Cerita berhasil diunggah",
-  "uploadError": "Gagal mengunggah cerita: {message}"
+  "uploadError": "Gagal mengunggah cerita: {message}",
+  
+  "tapToAddPhoto": "Ketuk untuk menambahkan foto",
+  "details": "Detail",
+  "location": "Lokasi",
+  "upgradeForLocation": "Tingkatkan ke versi berbayar untuk menambahkan lokasi pada cerita Anda",
+  "getCurrentLocation": "Dapatkan lokasi saat ini",
+  "noLocationSelected": "Tidak ada lokasi dipilih",
+  "loadMore": "Muat lebih banyak",
+  "storyNotFound": "Cerita tidak ditemukan"
 } 

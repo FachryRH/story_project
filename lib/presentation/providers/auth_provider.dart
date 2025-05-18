@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:story_project/data/repositories/auth_repository.dart';
 import 'package:story_project/domain/models/user.dart';
 
-enum AuthState {
-  initial,
-  loading,
-  authenticated,
-  unauthenticated,
-  error,
-}
+enum AuthState { initial, loading, authenticated, unauthenticated, error }
 
 class AuthProvider extends ChangeNotifier {
   AuthRepository _authRepository;
@@ -94,4 +88,4 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-} 
+}

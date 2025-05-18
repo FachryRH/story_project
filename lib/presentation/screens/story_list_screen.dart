@@ -18,17 +18,68 @@ class StoryListScreen extends StatefulWidget {
   State<StoryListScreen> createState() => _StoryListScreenState();
 }
 
-class _StoryListScreenState extends State<StoryListScreen> {
+class _StoryListScreenState extends State<StoryListScreen>
+    with TickerProviderStateMixin {
+  late ScrollController _scrollController;
+  late AnimationController _animationController;
+  bool _isLoadingMore = false;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<StoryProvider>().getStories();
+    _scrollController = ScrollController()..addListener(_scrollListener);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    Future.microtask(() async {
+      await context.read<StoryProvider>().refreshStories();
+      if (mounted && context.read<StoryProvider>().stories.isNotEmpty) {
+        _animationController.forward();
+      }
     });
   }
 
-  void _refresh() {
-    context.read<StoryProvider>().getStories();
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_isLoadingMore) return;
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreStories();
+    }
+  }
+
+  Future<void> _loadMoreStories() async {
+    final storyProvider = context.read<StoryProvider>();
+
+    if (storyProvider.state == StoryState.loading ||
+        storyProvider.state == StoryState.loadingMore ||
+        !storyProvider.hasMore) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    await storyProvider.getStories();
+
+    setState(() {
+      _isLoadingMore = false;
+    });
+  }
+
+  Future<void> _refresh() async {
+    await context.read<StoryProvider>().refreshStories();
   }
 
   void _logout() async {
@@ -54,16 +105,14 @@ class _StoryListScreenState extends State<StoryListScreen> {
           PopupMenuButton(
             icon: const Icon(Icons.language),
             tooltip: 'Language',
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'en',
-                child: const Text('English'),
-              ),
-              PopupMenuItem(
-                value: 'id',
-                child: const Text('Bahasa Indonesia'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(value: 'en', child: const Text('English')),
+                  PopupMenuItem(
+                    value: 'id',
+                    child: const Text('Bahasa Indonesia'),
+                  ),
+                ],
             onSelected: (value) {
               final locale = Locale(value);
               context.read<LocaleProvider>().setLocale(locale);
@@ -73,11 +122,13 @@ class _StoryListScreenState extends State<StoryListScreen> {
       ),
       body: Consumer<StoryProvider>(
         builder: (context, storyProvider, child) {
-          if (storyProvider.state == StoryState.loading) {
+          if (storyProvider.state == StoryState.loading &&
+              storyProvider.stories.isEmpty) {
             return const LoadingIndicator();
           }
 
-          if (storyProvider.state == StoryState.error) {
+          if (storyProvider.state == StoryState.error &&
+              storyProvider.stories.isEmpty) {
             return ErrorView(
               message: storyProvider.errorMessage ?? 'Unknown error',
               onRetry: _refresh,
@@ -89,14 +140,26 @@ class _StoryListScreenState extends State<StoryListScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () async => _refresh(),
-            child: ListView.builder(
-              itemCount: storyProvider.stories.length,
-              padding: const EdgeInsets.all(16.0),
-              itemBuilder: (context, index) {
-                final story = storyProvider.stories[index];
-                return _buildStoryItem(story);
-              },
+            onRefresh: _refresh,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount:
+                        storyProvider.stories.length +
+                        (storyProvider.hasMore ? 1 : 0),
+                    padding: const EdgeInsets.all(16.0),
+                    itemBuilder: (context, index) {
+                      if (index == storyProvider.stories.length) {
+                        return _buildLoadingIndicator();
+                      }
+                      final story = storyProvider.stories[index];
+                      return _buildStoryItemWithAnimation(story, index);
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },
@@ -108,31 +171,70 @@ class _StoryListScreenState extends State<StoryListScreen> {
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildStoryItemWithAnimation(Story story, int index) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        final delay = index * 0.2;
+        final animation = Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Interval(delay, 1.0, curve: Curves.easeOut),
+          ),
+        );
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.2),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: _buildStoryItem(story),
+    );
+  }
+
   Widget _buildStoryItem(Story story) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       elevation: 2,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: InkWell(
-        onTap: () => context.goNamed('story_detail', pathParameters: {'id': story.id}),
+        onTap:
+            () => context.goNamed(
+              'story_detail',
+              pathParameters: {'id': story.id},
+            ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 200,
               width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl: story.photoUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                errorWidget: (context, url, error) => const Icon(
-                  Icons.error,
-                  size: 48,
+              child: Hero(
+                tag: 'story_image_${story.id}',
+                child: CachedNetworkImage(
+                  imageUrl: story.photoUrl,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                  errorWidget:
+                      (context, url, error) =>
+                          const Icon(Icons.error, size: 48),
                 ),
               ),
             ),
@@ -146,7 +248,9 @@ class _StoryListScreenState extends State<StoryListScreen> {
                       CircleAvatar(
                         backgroundColor: Theme.of(context).primaryColor,
                         child: Text(
-                          story.name.isNotEmpty ? story.name[0].toUpperCase() : '?',
+                          story.name.isNotEmpty
+                              ? story.name[0].toUpperCase()
+                              : '?',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -168,11 +272,28 @@ class _StoryListScreenState extends State<StoryListScreen> {
                   const SizedBox(height: 8),
                   Text(
                     _formatDate(story.createdAt),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
+                  if (story.lat != null && story.lon != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.red[400],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Has location',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -197,4 +318,4 @@ class _StoryListScreenState extends State<StoryListScreen> {
       return 'Just now';
     }
   }
-} 
+}

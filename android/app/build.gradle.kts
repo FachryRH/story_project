@@ -30,6 +30,22 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "mode"
+    productFlavors {
+        create("free") {
+            dimension = "mode"
+            applicationIdSuffix = ".free"
+            versionNameSuffix = "-free"
+            resValue("string", "app_name", "Story App Free")
+        }
+        create("paid") {
+            dimension = "mode"
+            applicationIdSuffix = ".paid"
+            versionNameSuffix = "-paid"
+            resValue("string", "app_name", "Story App Paid")
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

@@ -10,8 +10,9 @@ class StoryService {
     if (page != null) params['page'] = page.toString();
     if (size != null) params['size'] = size.toString();
 
-    final Uri uri = Uri.parse('${ApiConstants.baseUrl}${ApiConstants.stories}')
-        .replace(queryParameters: params);
+    final Uri uri = Uri.parse(
+      '${ApiConstants.baseUrl}${ApiConstants.stories}',
+    ).replace(queryParameters: params);
 
     final response = await http.get(
       uri,
@@ -62,20 +63,13 @@ class StoryService {
     var request = http.MultipartRequest('POST', uri);
     request.headers['Authorization'] = 'Bearer $token';
 
-    // Add description
     request.fields['description'] = description;
 
-    // Add location if provided
     if (lat != null) request.fields['lat'] = lat.toString();
     if (lon != null) request.fields['lon'] = lon.toString();
 
-    // Add photo
     request.files.add(
-      http.MultipartFile.fromBytes(
-        'photo',
-        photoBytes,
-        filename: fileName,
-      ),
+      http.MultipartFile.fromBytes('photo', photoBytes, filename: fileName),
     );
 
     final streamedResponse = await request.send();
@@ -86,4 +80,4 @@ class StoryService {
       throw Exception(responseData['message']);
     }
   }
-} 
+}

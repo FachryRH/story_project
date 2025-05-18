@@ -8,10 +8,7 @@ class AuthService {
     final response = await http.post(
       Uri.parse('${ApiConstants.baseUrl}${ApiConstants.login}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'email': email, 'password': password}),
     );
 
     final responseData = jsonDecode(response.body);
@@ -27,11 +24,7 @@ class AuthService {
     final response = await http.post(
       Uri.parse('${ApiConstants.baseUrl}${ApiConstants.register}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'name': name, 'email': email, 'password': password}),
     );
 
     final responseData = jsonDecode(response.body);
@@ -40,4 +33,4 @@ class AuthService {
       throw Exception(responseData['message']);
     }
   }
-} 
+}

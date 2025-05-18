@@ -35,4 +35,4 @@ class AuthRepository {
   Future<void> logout() async {
     await _authPreferences.clearAuth();
   }
-} 
+}

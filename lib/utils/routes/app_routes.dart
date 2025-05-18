@@ -18,7 +18,9 @@ class AppRoutes {
     initialLocation: '/',
     redirect: (context, state) async {
       final isLoggedIn = await authRepository.isLoggedIn();
-      final loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
+      final loggingIn =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
 
       if (!isLoggedIn && !loggingIn) {
         return '/login';

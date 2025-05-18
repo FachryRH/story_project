@@ -15,7 +15,7 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
     final savedLocale = prefs.getString(_localeKey);
-    
+
     if (savedLocale != null) {
       setLocale(Locale(savedLocale));
     }
@@ -24,7 +24,7 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> setLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_localeKey, locale.languageCode);
-    
+
     _locale = locale;
     notifyListeners();
   }
@@ -32,8 +32,8 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> clearLocale() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_localeKey);
-    
+
     _locale = null;
     notifyListeners();
   }
-} 
+}

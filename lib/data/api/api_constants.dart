@@ -4,4 +4,4 @@ class ApiConstants {
   static const String login = '/login';
   static const String stories = '/stories';
   static const String detailStory = '/stories/';
-} 
+}

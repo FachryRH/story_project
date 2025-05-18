@@ -47,4 +47,4 @@ class AuthPreferences {
     await prefs.remove(_tokenKey);
     return prefs.setBool(_isLoggedInKey, false);
   }
-} 
+}
